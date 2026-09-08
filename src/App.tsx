@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Plus, LayoutGrid, ShoppingCart, DatabaseBackup, Shield } from 'lucide-react';
 import type { InventoryItem, Language, SortConfig } from '@/lib/types';
 import { t } from '@/lib/i18n';
-import { createSyncClient } from './supabase';
+import { setSyncId as updateSupabaseSyncId, supabase } from './supabase';
 import {
   searchItems,
   filterItems,
@@ -51,7 +51,11 @@ function App() {
     const saved = localStorage.getItem('inventory-lang');
     return (saved as Language) || 'en';
   });
-  const [syncId, setSyncId] = useState(getOrCreateSyncId);
+  const [syncId, setSyncId] = useState(() => {
+    const id = getOrCreateSyncId();
+    updateSupabaseSyncId(id);
+    return id;
+  });
   const [items, setItems] = useState<InventoryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState<View>('inventory');
@@ -71,8 +75,8 @@ function App() {
   const loadItems = useCallback(async () => {
     try {
       setLoading(true);
-      const client = createSyncClient(syncId);
-      const { data, error } = await client.from('household_inventory').select('*');
+      updateSupabaseSyncId(syncId);
+      const { data, error } = await supabase.from('household_inventory').select('*');
 
       if (error) {
         console.warn('Database error:', error);
@@ -132,7 +136,7 @@ function App() {
 
   const handleSaveItem = async (item: InventoryItem) => {
     try {
-      const client = createSyncClient(syncId);
+      updateSupabaseSyncId(syncId);
       const now = new Date().toISOString();
       const isUpdate = item.id && items.some(i => i.id === item.id);
 
@@ -151,12 +155,12 @@ function App() {
       };
 
       if (isUpdate) {
-        const { error } = await client.from('household_inventory')
+        const { error } = await supabase.from('household_inventory')
           .update({ ...baseItem, updated_at: now })
           .eq('id', item.id);
         if (error) throw error;
       } else {
-        const { error } = await client.from('household_inventory')
+        const { error } = await supabase.from('household_inventory')
           .insert([{ ...baseItem, created_at: now, updated_at: now }]);
         if (error) throw error;
       }
@@ -173,8 +177,8 @@ function App() {
 
   const handleDeleteItem = async (id: string) => {
     try {
-      const client = createSyncClient(syncId);
-      const { error } = await client.from('household_inventory').delete().eq('id', id);
+      updateSupabaseSyncId(syncId);
+      const { error } = await supabase.from('household_inventory').delete().eq('id', id);
       if (error) throw error;
       await loadItems();
       setToast({ message: 'Deleted', type: 'success' });
@@ -186,7 +190,7 @@ function App() {
 
   const handleImport = async (importedItems: InventoryItem[]) => {
     try {
-      const client = createSyncClient(syncId);
+      updateSupabaseSyncId(syncId);
       const now = new Date().toISOString();
       const rows = importedItems.map(item => ({
         id: item.id || generateId(),
@@ -202,7 +206,7 @@ function App() {
         purchase_date: item.purchaseDate || null,
         updated_at: now,
       }));
-      const { error } = await client.from('household_inventory').upsert(rows, { onConflict: 'id' });
+      const { error } = await supabase.from('household_inventory').upsert(rows, { onConflict: 'id' });
       if (error) throw error;
       await loadItems();
       setToast({ message: 'Import complete', type: 'success' });
@@ -214,8 +218,8 @@ function App() {
 
   const handleClearAll = async () => {
     try {
-      const client = createSyncClient(syncId);
-      const { error } = await client.from('household_inventory').delete().neq('id', 'never-match');
+      updateSupabaseSyncId(syncId);
+      const { error } = await supabase.from('household_inventory').delete().neq('id', 'never-match');
       if (error) throw error;
       await loadItems();
       setToast({ message: 'All data cleared', type: 'success' });
@@ -246,6 +250,7 @@ function App() {
             const code = prompt('Enter secondary device Sync Code:');
             if (code) {
               localStorage.setItem('household_sync_id', code);
+              updateSupabaseSyncId(code);
               setSyncId(code);
             }
           }} className="text-teal-600 underline font-semibold">Link Device</button>
