@@ -149,7 +149,7 @@ function App() {
         category: item.category || 'General',
         location: item.location || 'Home',
         quantity: Number(item.quantity) || 1,
-        low_stock_threshold: Number(item.lowStockThreshold) || 1,
+        low_stock_threshold: Number(item.lowStockThreshold) || null,
         expiration_date: item.expirationDate || null,
         purchase_date: item.purchaseDate || null,
       };
