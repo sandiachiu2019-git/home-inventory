@@ -133,7 +133,10 @@ function App() {
   const handleSaveItem = async (item: InventoryItem) => {
     try {
       const client = createSyncClient(syncId);
-      const secureItem = {
+      const now = new Date().toISOString();
+      const isUpdate = item.id && items.some(i => i.id === item.id);
+
+      const baseItem = {
         id: item.id || generateId(),
         sync_id: syncId,
         item_name_en: encryptText(item.name || '', syncId),
@@ -145,14 +148,16 @@ function App() {
         low_stock_threshold: Number(item.lowStockThreshold) || 1,
         expiration_date: item.expirationDate || null,
         purchase_date: item.purchaseDate || null,
-        updated_at: new Date().toISOString(),
       };
 
-      if (item.id && items.some(i => i.id === item.id)) {
-        const { error } = await client.from('household_inventory').update(secureItem).eq('id', item.id);
+      if (isUpdate) {
+        const { error } = await client.from('household_inventory')
+          .update({ ...baseItem, updated_at: now })
+          .eq('id', item.id);
         if (error) throw error;
       } else {
-        const { error } = await client.from('household_inventory').insert([secureItem]);
+        const { error } = await client.from('household_inventory')
+          .insert([{ ...baseItem, created_at: now, updated_at: now }]);
         if (error) throw error;
       }
 
@@ -182,6 +187,7 @@ function App() {
   const handleImport = async (importedItems: InventoryItem[]) => {
     try {
       const client = createSyncClient(syncId);
+      const now = new Date().toISOString();
       const rows = importedItems.map(item => ({
         id: item.id || generateId(),
         sync_id: syncId,
@@ -194,7 +200,7 @@ function App() {
         low_stock_threshold: Number(item.lowStockThreshold) || 1,
         expiration_date: item.expirationDate || null,
         purchase_date: item.purchaseDate || null,
-        updated_at: new Date().toISOString(),
+        updated_at: now,
       }));
       const { error } = await client.from('household_inventory').upsert(rows, { onConflict: 'id' });
       if (error) throw error;
