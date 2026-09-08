@@ -1,6 +1,7 @@
 export interface InventoryItem {
   id: string;
   name: string;
+  nameZh?: string;
   category: string;
   location: string;
   quantity: number;
