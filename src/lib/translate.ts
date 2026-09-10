@@ -1,0 +1,233 @@
+import type { Language } from './types';
+
+const dictionary: Record<string, { en: string; zh: string }> = {
+  apple: { en: 'Apple', zh: '蘋果' },
+  banana: { en: 'Banana', zh: '香蕉' },
+  orange: { en: 'Orange', zh: '橙' },
+  milk: { en: 'Milk', zh: '牛奶' },
+  bread: { en: 'Bread', zh: '麵包' },
+  eggs: { en: 'Eggs', zh: '雞蛋' },
+  egg: { en: 'Egg', zh: '雞蛋' },
+  rice: { en: 'Rice', zh: '米' },
+  flour: { en: 'Flour', zh: '麵粉' },
+  sugar: { en: 'Sugar', zh: '糖' },
+  salt: { en: 'Salt', zh: '鹽' },
+  oil: { en: 'Oil', zh: '油' },
+  water: { en: 'Water', zh: '水' },
+  juice: { en: 'Juice', zh: '果汁' },
+  coffee: { en: 'Coffee', zh: '咖啡' },
+  tea: { en: 'Tea', zh: '茶' },
+  cheese: { en: 'Cheese', zh: '起司' },
+  butter: { en: 'Butter', zh: '奶油' },
+  yogurt: { en: 'Yogurt', zh: '優格' },
+  chicken: { en: 'Chicken', zh: '雞肉' },
+  beef: { en: 'Beef', zh: '牛肉' },
+  pork: { en: 'Pork', zh: '豬肉' },
+  fish: { en: 'Fish', zh: '魚' },
+  shrimp: { en: 'Shrimp', zh: '蝦' },
+  tofu: { en: 'Tofu', zh: '豆腐' },
+  noodles: { en: 'Noodles', zh: '麵條' },
+  pasta: { en: 'Pasta', zh: '義大利麵' },
+  cookie: { en: 'Cookie', zh: '餅乾' },
+  cookies: { en: 'Cookies', zh: '餅乾' },
+  chocolate: { en: 'Chocolate', zh: '巧克力' },
+  candy: { en: 'Candy', zh: '糖果' },
+  snack: { en: 'Snack', zh: '零食' },
+  snacks: { en: 'Snacks', zh: '零食' },
+  chips: { en: 'Chips', zh: '洋芋片' },
+  soda: { en: 'Soda', zh: '汽水' },
+  beer: { en: 'Beer', zh: '啤酒' },
+  wine: { en: 'Wine', zh: '葡萄酒' },
+  'paper towel': { en: 'Paper Towel', zh: '紙巾' },
+  'toilet paper': { en: 'Toilet Paper', zh: '衛生紙' },
+  'dish soap': { en: 'Dish Soap', zh: '洗碗精' },
+  'laundry detergent': { en: 'Laundry Detergent', zh: '洗衣精' },
+  shampoo: { en: 'Shampoo', zh: '洗髮精' },
+  'body wash': { en: 'Body Wash', zh: '沐浴乳' },
+  toothpaste: { en: 'Toothpaste', zh: '牙膏' },
+  'trash bag': { en: 'Trash Bag', zh: '垃圾袋' },
+  'trash bags': { en: 'Trash Bags', zh: '垃圾袋' },
+  tissue: { en: 'Tissue', zh: '面紙' },
+  'hand sanitizer': { en: 'Hand Sanitizer', zh: '洗手液' },
+  battery: { en: 'Battery', zh: '電池' },
+  batteries: { en: 'Batteries', zh: '電池' },
+  'light bulb': { en: 'Light Bulb', zh: '燈泡' },
+  'light bulbs': { en: 'Light Bulbs', zh: '燈泡' },
+  candle: { en: 'Candle', zh: '蠟燭' },
+  'first aid kit': { en: 'First Aid Kit', zh: '急救箱' },
+  'vitamin c': { en: 'Vitamin C', zh: '維他命C' },
+  vitamins: { en: 'Vitamins', zh: '維他命' },
+  'pain reliever': { en: 'Pain Reliever', zh: '止痛藥' },
+  'cold medicine': { en: 'Cold Medicine', zh: '感冒藥' },
+  tomato: { en: 'Tomato', zh: '番茄' },
+  tomatoes: { en: 'Tomatoes', zh: '番茄' },
+  potato: { en: 'Potato', zh: '馬鈴薯' },
+  potatoes: { en: 'Potatoes', zh: '馬鈴薯' },
+  onion: { en: 'Onion', zh: '洋蔥' },
+  onions: { en: 'Onions', zh: '洋蔥' },
+  garlic: { en: 'Garlic', zh: '大蒜' },
+  carrot: { en: 'Carrot', zh: '胡蘿蔔' },
+  carrots: { en: 'Carrots', zh: '胡蘿蔔' },
+  lettuce: { en: 'Lettuce', zh: '生菜' },
+  cabbage: { en: 'Cabbage', zh: '高麗菜' },
+  spinach: { en: 'Spinach', zh: '菠菜' },
+  cucumber: { en: 'Cucumber', zh: '小黃瓜' },
+  pepper: { en: 'Pepper', zh: '胡椒' },
+  mushroom: { en: 'Mushroom', zh: '蘑菇' },
+  mushrooms: { en: 'Mushrooms', zh: '蘑菇' },
+  corn: { en: 'Corn', zh: '玉米' },
+  'bell pepper': { en: 'Bell Pepper', zh: '甜椒' },
+  lemon: { en: 'Lemon', zh: '檸檬' },
+  lime: { en: 'Lime', zh: '萊姆' },
+  grape: { en: 'Grape', zh: '葡萄' },
+  grapes: { en: 'Grapes', zh: '葡萄' },
+  strawberry: { en: 'Strawberry', zh: '草莓' },
+  strawberries: { en: 'Strawberries', zh: '草莓' },
+  blueberry: { en: 'Blueberry', zh: '藍莓' },
+  'blueberries': { en: 'Blueberries', zh: '藍莓' },
+  watermelon: { en: 'Watermelon', zh: '西瓜' },
+  pineapple: { en: 'Pineapple', zh: '鳳梨' },
+  mango: { en: 'Mango', zh: '芒果' },
+  peach: { en: 'Peach', zh: '桃子' },
+  pear: { en: 'Pear', zh: '梨子' },
+  cherry: { en: 'Cherry', zh: '櫻桃' },
+  cereal: { en: 'Cereal', zh: '麥片' },
+  oatmeal: { en: 'Oatmeal', zh: '燕麥片' },
+  'peanut butter': { en: 'Peanut Butter', zh: '花生醬' },
+  jam: { en: 'Jam', zh: '果醬' },
+  honey: { en: 'Honey', zh: '蜂蜜' },
+  'soy sauce': { en: 'Soy Sauce', zh: '醬油' },
+  'vinegar': { en: 'Vinegar', zh: '醋' },
+  'ketchup': { en: 'Ketchup', zh: '番茄醬' },
+  'mayonnaise': { en: 'Mayonnaise', zh: '美乃滋' },
+  'mustard': { en: 'Mustard', zh: '芥末醬' },
+  'salad dressing': { en: 'Salad Dressing', zh: '沙拉醬' },
+  'baking powder': { en: 'Baking Powder', zh: '泡打粉' },
+  'baking soda': { en: 'Baking Soda', zh: '小蘇打' },
+  'yeast': { en: 'Yeast', zh: '酵母' },
+  'cocoa powder': { en: 'Cocoa Powder', zh: '可可粉' },
+  'vanilla extract': { en: 'Vanilla Extract', zh: '香草精' },
+  'ice cream': { en: 'Ice Cream', zh: '冰淇淋' },
+  'frozen pizza': { en: 'Frozen Pizza', zh: '冷凍披薩' },
+  'frozen vegetables': { en: 'Frozen Vegetables', zh: '冷凍蔬菜' },
+  'canned beans': { en: 'Canned Beans', zh: '罐頭豆' },
+  'canned tuna': { en: 'Canned Tuna', zh: '罐頭鮪魚' },
+  'canned soup': { en: 'Canned Soup', zh: '罐頭湯' },
+  'instant noodles': { en: 'Instant Noodles', zh: '泡麵' },
+  'ramen': { en: 'Ramen', zh: '拉麵' },
+  'dumplings': { en: 'Dumplings', zh: '水餃' },
+  'spring rolls': { en: 'Spring Rolls', zh: '春捲' },
+  'soy milk': { en: 'Soy Milk', zh: '豆漿' },
+  'almond milk': { en: 'Almond Milk', zh: '杏仁奶' },
+  'green tea': { en: 'Green Tea', zh: '綠茶' },
+  'black tea': { en: 'Black Tea', zh: '紅茶' },
+  'bottled water': { en: 'Bottled Water', zh: '瓶裝水' },
+  'sparkling water': { en: 'Sparkling Water', zh: '氣泡水' },
+  'energy drink': { en: 'Energy Drink', zh: '能量飲料' },
+  'protein bar': { en: 'Protein Bar', zh: '蛋白質棒' },
+  'granola bar': { en: 'Granola Bar', zh: '穀物棒' },
+  'baby formula': { en: 'Baby Formula', zh: '嬰兒奶粉' },
+  'diapers': { en: 'Diapers', zh: '尿布' },
+  'pet food': { en: 'Pet Food', zh: '寵物食品' },
+  'cat food': { en: 'Cat Food', zh: '貓糧' },
+  'dog food': { en: 'Dog Food', zh: '狗糧' },
+  'cat litter': { en: 'Cat Litter', zh: '貓砂' },
+  'aluminum foil': { en: 'Aluminum Foil', zh: '鋁箔紙' },
+  'plastic wrap': { en: 'Plastic Wrap', zh: '保鮮膜' },
+  'ziploc bags': { en: 'Ziploc Bags', zh: '密封袋' },
+  'paper plates': { en: 'Paper Plates', zh: '紙盤' },
+  'plastic cups': { en: 'Plastic Cups', zh: '塑膠杯' },
+  'dishwasher tablets': { en: 'Dishwasher Tablets', zh: '洗碗機錠' },
+  'fabric softener': { en: 'Fabric Softener', zh: '柔軟精' },
+  'bleach': { en: 'Bleach', zh: '漂白水' },
+  'glass cleaner': { en: 'Glass Cleaner', zh: '玻璃清潔劑' },
+  'air freshener': { en: 'Air Freshener', zh: '空氣清新劑' },
+  'insect repellent': { en: 'Insect Repellent', zh: '防蚊液' },
+  'sunscreen': { en: 'Sunscreen', zh: '防曬乳' },
+  'lotion': { en: 'Lotion', zh: '乳液' },
+  'soap': { en: 'Soap', zh: '肥皂' },
+  'razor': { en: 'Razor', zh: '刮鬍刀' },
+  'cotton swabs': { en: 'Cotton Swabs', zh: '棉花棒' },
+  'cotton balls': { en: 'Cotton Balls', zh: '棉花球' },
+  'bandages': { en: 'Bandages', zh: 'OK繃' },
+  'thermometer': { en: 'Thermometer', zh: '溫度計' },
+  'toothbrush': { en: 'Toothbrush', zh: '牙刷' },
+  'dental floss': { en: 'Dental Floss', zh: '牙線' },
+  'mouthwash': { en: 'Mouthwash', zh: '漱口水' },
+  'shaving cream': { en: 'Shaving Cream', zh: '刮鬍泡' },
+  'hair dryer': { en: 'Hair Dryer', zh: '吹風機' },
+  'nail clippers': { en: 'Nail Clippers', zh: '指甲剪' },
+  'tweezers': { en: 'Tweezers', zh: '鑷子' },
+  'scissors': { en: 'Scissors', zh: '剪刀' },
+  'tape': { en: 'Tape', zh: '膠帶' },
+  'glue': { en: 'Glue', zh: '膠水' },
+  'pen': { en: 'Pen', zh: '筆' },
+  'pens': { en: 'Pens', zh: '筆' },
+  'pencil': { en: 'Pencil', zh: '鉛筆' },
+  'notebook': { en: 'Notebook', zh: '筆記本' },
+  'envelope': { en: 'Envelope', zh: '信封' },
+  'stamps': { en: 'Stamps', zh: '郵票' },
+  'umbrella': { en: 'Umbrella', zh: '雨傘' },
+  'flashlight': { en: 'Flashlight', zh: '手電筒' },
+  'extension cord': { en: 'Extension Cord', zh: '延長線' },
+  'power strip': { en: 'Power Strip', zh: '延長線' },
+  'screwdriver': { en: 'Screwdriver', zh: '螺絲起子' },
+  'hammer': { en: 'Hammer', zh: '鎚子' },
+  'wrench': { en: 'Wrench', zh: '扳手' },
+  'pliers': { en: 'Pliers', zh: '鉗子' },
+  'measuring tape': { en: 'Measuring Tape', zh: '捲尺' },
+  'safety pins': { en: 'Safety Pins', zh: '安全別針' },
+  'sewing kit': { en: 'Sewing Kit', zh: '針線包' },
+  'laundry basket': { en: 'Laundry Basket', zh: '洗衣籃' },
+  'hangers': { en: 'Hangers', zh: '衣架' },
+  'storage box': { en: 'Storage Box', zh: '收納箱' },
+  'storage bins': { en: 'Storage Bins', zh: '收納箱' },
+  'broom': { en: 'Broom', zh: '掃帚' },
+  'mop': { en: 'Mop', zh: '拖把' },
+  'dustpan': { en: 'Dustpan', zh: '簸箕' },
+  'sponge': { en: 'Sponge', zh: '海綿' },
+  'scrubber': { en: 'Scrubber', zh: '菜瓜布' },
+  'gloves': { en: 'Gloves', zh: '手套' },
+  'rubber gloves': { en: 'Rubber Gloves', zh: '橡膠手套' },
+};
+
+// Build reverse lookups properly sanitized to lower-case
+const reverseDictionary: Record<string, { en: string; zh: string }> = {};
+for (const entry of Object.values(dictionary)) {
+  reverseDictionary[entry.zh.trim()] = entry;
+}
+
+export async function translate(text: string, from: Language): Promise<string | null> {
+  if (!text || !text.trim()) return null;
+  
+  const cleanText = text.trim();
+  const searchKey = cleanText.toLowerCase();
+
+  // 1. Try local memory map execution first (Fast & Free)
+  if (from === 'en') {
+    const entry = dictionary[searchKey];
+    if (entry) return entry.zh;
+  } else {
+    const entry = reverseDictionary[cleanText];
+    if (entry) return entry.en;
+  }
+
+  // 2. Safe Fallback: Free lightweight API fetch if the item isn't in our hardcoded dictionary
+  try {
+    const targetLang = from === 'en' ? 'zh-TW' : 'en';
+    const sourceLang = from === 'en' ? 'en' : 'zh-CN';
+    
+    const url = `https://googleapis.com{sourceLang}&tl=${targetLang}&dt=t&q=${encodeURIComponent(cleanText)}`;
+    const response = await fetch(url);
+    const data = await response.json();
+    
+    if (data && data[0] && data[0][0] && data[0][0][0]) {
+      return data[0][0][0];
+    }
+  } catch (error) {
+    console.warn("Translation fallback failed:", error);
+  }
+
+  return null;
+}
+

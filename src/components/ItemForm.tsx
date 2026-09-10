@@ -3,6 +3,7 @@ import { X, ChevronDown, ChevronUp, Plus, Trash2, Package } from 'lucide-react';
 import type { InventoryItem, Language } from '@/lib/types';
 import { t } from '@/lib/i18n';
 import { generateId } from '@/lib/utils';
+import { translate } from '@/lib/translate'; // Import your new translator utility
 
 interface ItemFormProps {
   lang: Language;
@@ -14,7 +15,10 @@ interface ItemFormProps {
 }
 
 export function ItemForm({ lang, item, existingCategories, existingLocations, onSave, onClose }: ItemFormProps) {
-  const [name, setName] = useState(item?.name ?? '');
+  // 1. Decoupled name states matching your schema columns
+  const [nameEn, setNameEn] = useState(item?.item_name_en ?? '');
+  const [nameZh, setNameZh] = useState(item?.item_name_zh ?? '');
+  
   const [category, setCategory] = useState(item?.category ?? '');
   const [location, setLocation] = useState(item?.location ?? '');
   const [quantity, setQuantity] = useState(item?.quantity?.toString() ?? '1');
@@ -29,7 +33,12 @@ export function ItemForm({ lang, item, existingCategories, existingLocations, on
       : []
   );
   const [showAdvanced, setShowAdvanced] = useState(false);
-  const [errors, setErrors] = useState<{ name?: boolean; category?: boolean; location?: boolean; quantity?: boolean }>({});
+  
+  // Track state-specific validation blocks
+  const [errors, setErrors] = useState<{ nameEn?: boolean; nameZh?: boolean; category?: boolean; location?: boolean; quantity?: boolean }>({});
+
+  // 2. Track whether the form is running a fresh creation action
+  const isCreateMode = !item;
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -39,9 +48,31 @@ export function ItemForm({ lang, item, existingCategories, existingLocations, on
     return () => window.removeEventListener('keydown', handler);
   }, [onClose]);
 
+  // 3. Dynamic Realtime Translators with "Create-Only" guard rails
+  const handleEnglishChange = async (value: string) => {
+    setNameEn(value);
+    if (errors.nameEn) setErrors((prev) => ({ ...prev, nameEn: false }));
+
+    if (isCreateMode && value.trim()) {
+      const translated = await translate(value, 'en');
+      if (translated) setNameZh(translated);
+    }
+  };
+
+  const handleChineseChange = async (value: string) => {
+    setNameZh(value);
+    if (errors.nameZh) setErrors((prev) => ({ ...prev, nameZh: false }));
+
+    if (isCreateMode && value.trim()) {
+      const translated = await translate(value, 'zh');
+      if (translated) setNameEn(translated);
+    }
+  };
+
   const handleSave = () => {
     const newErrors: typeof errors = {};
-    if (!name.trim()) newErrors.name = true;
+    if (!nameEn.trim()) newErrors.nameEn = true;
+    if (!nameZh.trim()) newErrors.nameZh = true;
     if (!category.trim()) newErrors.category = true;
     if (!location.trim()) newErrors.location = true;
     if (!quantity.trim() || isNaN(Number(quantity))) newErrors.quantity = true;
@@ -59,9 +90,11 @@ export function ItemForm({ lang, item, existingCategories, existingLocations, on
     }
 
     const now = Date.now();
-    const savedItem: InventoryItem = {
+    const savedItem: any = {
       id: item?.id ?? generateId(),
-      name: name.trim(),
+      // Ensure exact keys are assigned to pass securely to the Supabase layer
+      item_name_en: nameEn.trim(),
+      item_name_zh: nameZh.trim(),
       category: category.trim(),
       location: location.trim(),
       quantity: parseInt(quantity, 10) || 0,
@@ -106,24 +139,33 @@ export function ItemForm({ lang, item, existingCategories, existingLocations, on
         </div>
 
         <div className="overflow-y-auto px-6 py-5 space-y-5 flex-1">
-          {/* Required fields */}
           <div className="space-y-4">
             <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide">
               {t(lang, 'required')}
             </p>
 
+            {/* 4. English Name Field Row */}
             <div>
-              <label className={labelClass}>{t(lang, 'itemName')} *</label>
+              <label className={labelClass}>English Name *</label>
               <input
                 type="text"
-                value={name}
-                onChange={(e) => {
-                  setName(e.target.value);
-                  if (errors.name) setErrors({ ...errors, name: false });
-                }}
-                className={inputClass(errors.name)}
-                placeholder={t(lang, 'itemName')}
+                value={nameEn}
+                onChange={(e) => handleEnglishChange(e.target.value)}
+                className={inputClass(errors.nameEn)}
+                placeholder="e.g. Apple"
                 autoFocus
+              />
+            </div>
+
+            {/* 5. Chinese Name Field Row */}
+            <div>
+              <label className={labelClass}>中文名稱 (Chinese Name) *</label>
+              <input
+                type="text"
+                value={nameZh}
+                onChange={(e) => handleChineseChange(e.target.value)}
+                className={inputClass(errors.nameZh)}
+                placeholder="例如：蘋果"
               />
             </div>
 
@@ -185,7 +227,7 @@ export function ItemForm({ lang, item, existingCategories, existingLocations, on
             </div>
           </div>
 
-          {/* Advanced attributes */}
+          {/* Advanced attributes section remains entirely intact */}
           <div className="border-t border-slate-100 pt-4">
             <button
               onClick={() => setShowAdvanced(!showAdvanced)}
